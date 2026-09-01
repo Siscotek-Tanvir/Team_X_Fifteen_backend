@@ -48,37 +48,37 @@ app.get("/", async (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: "Team X Fifteen API Server is running successfully!",
-    apiDirectory: {
-      authentication: {
-        register: "POST /api/v1/auth/register",
-        login: "POST /api/v1/auth/login",
-        changePassword: "POST /api/v1/auth/change-password (Authenticated)",
-        me: "GET /api/v1/auth/me (Authenticated)",
-      },
-      userManagement: {
-        note: "All user management routes require [admin] role with Bearer token in Authorization header",
-        getAllUsers: "GET /api/v1/users?search=&role=&status=&department=&page=&limit=",
-        getSingleUser: "GET /api/v1/users/:id",
-        updateRole: "PATCH /api/v1/users/:id/role",
-        updateStatus: "PATCH /api/v1/users/:id/status",
-        updateUser: "PATCH /api/v1/users/:id",
-        deleteUser: "DELETE /api/v1/users/:id",
-        userStats: "GET /api/v1/users/stats",
-      },
-      events: {
-        getAllEvents: "GET /api/v1/events (or /events, /api/events)",
-        getSingleEvent: "GET /api/v1/events/:id",
-        getFeaturedEvents: "GET /api/v1/events/featured",
-        getCategories: "GET /api/v1/events/categories",
-        getDepartments: "GET /api/v1/events/departments",
-        getStats: "GET /api/v1/events/stats",
-        createEvent: "POST /api/v1/events",
-        updateEvent: "PATCH /api/v1/events/:id (or PUT)",
-        deleteEvent: "DELETE /api/v1/events/:id",
-        registerForEvent: "POST /api/v1/events/:id/register",
-        seedEvents: "POST /api/v1/events/seed",
-      },
-    },
+    // apiDirectory: {
+    //   authentication: {
+    //     register: "POST /api/v1/auth/register",
+    //     login: "POST /api/v1/auth/login",
+    //     changePassword: "POST /api/v1/auth/change-password (Authenticated)",
+    //     me: "GET /api/v1/auth/me (Authenticated)",
+    //   },
+    //   userManagement: {
+    //     note: "All user management routes require [admin] role with Bearer token in Authorization header",
+    //     getAllUsers: "GET /api/v1/users?search=&role=&status=&department=&page=&limit=",
+    //     getSingleUser: "GET /api/v1/users/:id",
+    //     updateRole: "PATCH /api/v1/users/:id/role",
+    //     updateStatus: "PATCH /api/v1/users/:id/status",
+    //     updateUser: "PATCH /api/v1/users/:id",
+    //     deleteUser: "DELETE /api/v1/users/:id",
+    //     userStats: "GET /api/v1/users/stats",
+    //   },
+    //   events: {
+    //     getAllEvents: "GET /api/v1/events (or /events, /api/events)",
+    //     getSingleEvent: "GET /api/v1/events/:id",
+    //     getFeaturedEvents: "GET /api/v1/events/featured",
+    //     getCategories: "GET /api/v1/events/categories",
+    //     getDepartments: "GET /api/v1/events/departments",
+    //     getStats: "GET /api/v1/events/stats",
+    //     createEvent: "POST /api/v1/events",
+    //     updateEvent: "PATCH /api/v1/events/:id (or PUT)",
+    //     deleteEvent: "DELETE /api/v1/events/:id",
+    //     registerForEvent: "POST /api/v1/events/:id/register",
+    //     seedEvents: "POST /api/v1/events/seed",
+    //   },
+    // },
   });
 });
 
