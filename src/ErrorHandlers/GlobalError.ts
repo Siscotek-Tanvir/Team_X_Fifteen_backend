@@ -1,12 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
-// Define the error type based on the provided signature
-type globalError = (error: any, req: Request, res: Response, next: NextFunction) => void;
+type globalErrorHandler = (error: any, req: Request, res: Response, next: NextFunction) => void;
 
-const globalError: globalError = (error, req, res, next) => {
-  // Default error properties
-  const statusCode = error.status || 500;
+const globalError: globalErrorHandler = (error, req, res, next) => {
+  const statusCode = error.statusCode || error.status || 500;
   let message = error.message || "Internal Server Error";
 
   // Handle Mongoose CastError (invalid ObjectId)
@@ -46,15 +44,16 @@ const globalError: globalError = (error, req, res, next) => {
 
   // Handle Zod Validation Errors
   if (error instanceof ZodError) {
-    const validationErrors = error.issues.map(
-      (err: { path: any[]; message: any }) => `${err.path.join(".")}: ${err.message}`
+    const issues = (error as any).issues || (error as any).errors || [];
+    const validationErrors = issues.map(
+      (err: any) => `${Array.isArray(err.path) ? err.path.join(".") : ""}: ${err.message}`
     );
-    message = `${validationErrors.join(", ")}`;
+    message = validationErrors.length > 0 ? validationErrors.join(", ") : error.message;
     return res.status(400).json({
       success: false,
       statusCode: 400,
       message,
-      details: validationErrors, // Optional: include detailed errors for debugging
+      details: validationErrors,
       errorType: error?.name || "Validation Error",
     });
   }
@@ -64,8 +63,8 @@ const globalError: globalError = (error, req, res, next) => {
     success: false,
     statusCode,
     message,
-    error: process.env.NODE_ENV === "development" ? error : undefined, // Include error details in development
-    errorType: error?.name || "Undefined",
+    error: process.env.NODE_ENV === "development" ? error : undefined,
+    errorType: error?.name || "AppError",
   });
 };
 

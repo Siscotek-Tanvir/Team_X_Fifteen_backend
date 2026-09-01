@@ -6,23 +6,23 @@ export const updateUserValidationSchema = z.object({
     phone: z.string().optional(),
     department: z.string().optional(),
     studentId: z.string().optional(),
-    avatarUrl: z.string().url("Invalid avatar URL").optional().or(z.literal("")),
+    avatarUrl: z.string().optional(),
     bio: z.string().optional(),
   }),
 });
 
 export const updateUserRoleValidationSchema = z.object({
   body: z.object({
-    role: z.enum(["admin", "user", "moderator"], {
-      required_error: "Role is required and must be either admin, user, or moderator",
+    role: z.enum(["admin", "user", "moderator"] as const, {
+      message: "Role is required and must be either admin, user, or moderator",
     }),
   }),
 });
 
 export const updateUserStatusValidationSchema = z.object({
   body: z.object({
-    status: z.enum(["active", "blocked", "inactive"], {
-      required_error: "Status is required and must be either active, blocked, or inactive",
+    status: z.enum(["active", "blocked", "inactive"] as const, {
+      message: "Status is required and must be either active, blocked, or inactive",
     }),
   }),
 });
