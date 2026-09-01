@@ -1,3 +1,7 @@
+// server.ts
+import dns from "node:dns";
+dns.setServers(["1.1.1.1", "1.0.0.1"]);
+
 import dotenv from "dotenv";
 import { Server } from "http";
 import app from "./app";

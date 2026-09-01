@@ -1,5 +1,5 @@
 import cors from "cors";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { connectDB } from "./DB/connectDB";
 import globalError from "./ErrorHandlers/GlobalError";
 import { routeError } from "./ErrorHandlers/RouteError";
@@ -18,7 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, server-to-server) or from any origin
       callback(null, true);
     },
     credentials: true,
@@ -29,17 +28,7 @@ app.use(
 
 app.options("*", cors());
 
-// Ensure MongoDB is connected for serverless invocations
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-  } catch (err) {
-    console.error("DB connection error in middleware:", err);
-  }
-  next();
-});
-
-// Root / Health Check
+// Root / Health Check (does not require DB connection to respond immediately)
 app.get("/", async (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
@@ -47,6 +36,23 @@ app.get("/", async (req: Request, res: Response) => {
     environment: process.env.NODE_ENV || "development",
     timestamp: new Date().toISOString(),
   });
+});
+
+// Ensure MongoDB connection before processing any API route
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err: any) {
+    console.error("Database connection failure:", err);
+    res.status(503).json({
+      success: false,
+      statusCode: 503,
+      message:
+        "Database connection failed. Please ensure DB_URL is configured on Vercel and IP Access 0.0.0.0/0 is enabled in MongoDB Atlas Network Access.",
+      error: err?.message || err,
+    });
+  }
 });
 
 // API v1 Routes

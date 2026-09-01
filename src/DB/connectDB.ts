@@ -1,32 +1,55 @@
-import dns from "node:dns";
 import mongoose from "mongoose";
 import { envConfig } from "../Configs/envConfig";
 import { EventServices } from "../modules/events/event.service";
 import { UserServices } from "../modules/user/user.service";
 
-let isConnected = false;
+/**
+ * Global cache for serverless environments (Vercel)
+ */
+let cached = (global as any).mongoose;
+
+if (!cached) {
+  cached = (global as any).mongoose = { conn: null, promise: null };
+}
 
 export const connectDB = async () => {
-  if (isConnected || mongoose.connection.readyState >= 1) {
-    return;
+  const dbUrl = envConfig.dbUrl || process.env.DB_URL;
+
+  if (!dbUrl) {
+    throw new Error(
+      "DB_URL is missing. Please set DB_URL in your Vercel Project Environment Variables."
+    );
   }
 
-  const dbUrl = envConfig.dbUrl;
-  if (!dbUrl) {
-    console.error("Warning: DB_URL is not defined in environment variables.");
-    return;
+  if (cached.conn && mongoose.connection.readyState === 1) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts: mongoose.ConnectOptions = {
+      bufferCommands: true,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+    };
+
+    cached.promise = mongoose.connect(dbUrl, opts).then(async (m) => {
+      console.log("Connected to MongoDB Atlas successfully.");
+      try {
+        // Auto-seed defaults in background
+        UserServices.seedDefaultAdminUserIfEmpty().catch(() => {});
+        EventServices.seedInitialEventsIfEmpty().catch(() => {});
+      } catch (err) {
+        console.warn("Seeding notice:", err);
+      }
+      return m;
+    });
   }
 
   try {
-    dns.setServers(["1.1.1.1", "1.0.0.1"]);
-    await mongoose.connect(dbUrl);
-    isConnected = true;
-    console.log("Connected to MongoDB successfully.");
-
-    // Auto-seed default admin and default events if needed
-    await UserServices.seedDefaultAdminUserIfEmpty();
-    await EventServices.seedInitialEventsIfEmpty();
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
   }
 };
