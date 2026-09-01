@@ -9,6 +9,13 @@ const router = Router();
 // Protect ALL user management routes with Admin-Only authorization
 router.use(auth("admin"));
 
+// Provision new admin account (Admin only)
+router.post(
+  "/admin",
+  validateRequest(UserValidations.createAdminValidationSchema),
+  UserControllers.createAdmin
+);
+
 // Statistics
 router.get("/stats", UserControllers.getUserStats);
 

@@ -2,7 +2,7 @@ import { envConfig } from "../../Configs/envConfig";
 import { statusCodes } from "../../Configs/StatusCode";
 import AppError from "../../ErrorHandlers/AppError";
 import { userSearchableFields } from "./user.constant";
-import { IUser, IUserQuery, IUserRole, IUserStatus } from "./user.interface";
+import { ICreateAdminPayload, IUser, IUserQuery, IUserRole, IUserStatus } from "./user.interface";
 import { UserModel } from "./user.model";
 
 /**
@@ -27,6 +27,25 @@ const seedDefaultAdminUserIfEmpty = async () => {
   } catch (error) {
     console.error("Error creating default admin user:", error);
   }
+};
+
+/**
+ * Create a new Admin user (Admin only)
+ */
+const createAdminInDB = async (payload: ICreateAdminPayload) => {
+  const existingUser = await UserModel.findOne({ email: payload.email.toLowerCase() });
+  if (existingUser) {
+    throw new AppError(statusCodes.conflict, "An account with this email address already exists.");
+  }
+
+  const adminUser = await UserModel.create({
+    ...payload,
+    email: payload.email.toLowerCase(),
+    role: "admin",
+    status: "active",
+  });
+
+  return adminUser;
 };
 
 /**
@@ -148,7 +167,6 @@ const updateUserStatusInDB = async (id: string, status: IUserStatus) => {
  * Update user profile details
  */
 const updateUserInDB = async (id: string, payload: Partial<IUser>) => {
-  // Prevent direct password alteration through this endpoint
   delete payload.password;
 
   const user = await UserModel.findByIdAndUpdate(id, payload, {
@@ -187,7 +205,6 @@ const getUserStatsFromDB = async () => {
   const totalUsers = await UserModel.countDocuments();
   const totalAdmins = await UserModel.countDocuments({ role: "admin" });
   const totalRegularUsers = await UserModel.countDocuments({ role: "user" });
-  const totalModerators = await UserModel.countDocuments({ role: "moderator" });
   const activeUsers = await UserModel.countDocuments({ status: "active" });
   const blockedUsers = await UserModel.countDocuments({ status: "blocked" });
 
@@ -195,7 +212,6 @@ const getUserStatsFromDB = async () => {
     totalUsers,
     totalAdmins,
     totalRegularUsers,
-    totalModerators,
     activeUsers,
     blockedUsers,
   };
@@ -203,6 +219,7 @@ const getUserStatsFromDB = async () => {
 
 export const UserServices = {
   seedDefaultAdminUserIfEmpty,
+  createAdminInDB,
   getAllUsersFromDB,
   getSingleUserByIdFromDB,
   updateUserRoleInDB,

@@ -13,8 +13,8 @@ export const updateUserValidationSchema = z.object({
 
 export const updateUserRoleValidationSchema = z.object({
   body: z.object({
-    role: z.enum(["admin", "user", "moderator"] as const, {
-      message: "Role is required and must be either admin, user, or moderator",
+    role: z.enum(["admin", "user"] as const, {
+      message: "Role is required and must be either admin or user",
     }),
   }),
 });
@@ -27,8 +27,20 @@ export const updateUserStatusValidationSchema = z.object({
   }),
 });
 
+export const createAdminValidationSchema = z.object({
+  body: z.object({
+    name: z.string({ message: "Name is required" }).min(2, "Name must be at least 2 characters"),
+    email: z.string({ message: "Email is required" }).email("Invalid email format"),
+    password: z.string({ message: "Password is required" }).min(6, "Password must be at least 6 characters"),
+    phone: z.string().optional(),
+    department: z.string().optional().default("Administration"),
+    bio: z.string().optional(),
+  }),
+});
+
 export const UserValidations = {
   updateUserValidationSchema,
   updateUserRoleValidationSchema,
   updateUserStatusValidationSchema,
+  createAdminValidationSchema,
 };

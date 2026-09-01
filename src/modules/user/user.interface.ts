@@ -1,6 +1,6 @@
 import { Model } from "mongoose";
 
-export type IUserRole = "admin" | "user" | "moderator";
+export type IUserRole = "admin" | "user";
 export type IUserStatus = "active" | "blocked" | "inactive";
 
 export interface IUser {
@@ -17,6 +17,15 @@ export interface IUser {
   bio?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface ICreateAdminPayload {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  department?: string;
+  bio?: string;
 }
 
 export interface IUserQuery {

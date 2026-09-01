@@ -4,6 +4,17 @@ import catchAsync from "../../Utils/catchAsync";
 import { sendResponse } from "../../Utils/response";
 import { UserServices } from "./user.service";
 
+const createAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.createAdminInDB(req.body);
+
+  sendResponse(res, {
+    statusCode: statusCodes.create,
+    success: true,
+    message: "New Administrator account created successfully",
+    data: result,
+  });
+});
+
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.getAllUsersFromDB(req.query);
 
@@ -91,6 +102,7 @@ const getUserStats = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const UserControllers = {
+  createAdmin,
   getAllUsers,
   getSingleUser,
   updateUserRole,
