@@ -1,24 +1,20 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-// const bcryptRound = process.env.BCRYPT_SALT;
-// const accessSecret = process.env.JWT_ACCESS_SECRET;
-// const refreSecret = process.env.JWT_REFRESH_SECRET;
-const productionType = process.env.NODE_ENV;
-// const websiteLink = process.env.WEBSITE_LINK;
-// const nodeENV = process.env.NODE_ENV;
-// const gmailAuthPass = process.env.GMAIL_AUTH_PASS;
-// const recruiter_gmail = process.env.RECRUITER_GMAIL;
-// const tokenExpiresIn = process.env.JWT_TOKEN_EXPIRES_IN;
+const productionType = process.env.NODE_ENV || "development";
+const port = process.env.PORT || 5000;
+const dbUrl = process.env.DB_URL;
+const jwtSecret = process.env.JWT_ACCESS_SECRET || "team_x_fifteen_super_secret_jwt_key_2026_eastdelta";
+const jwtExpiresIn = process.env.JWT_TOKEN_EXPIRES_IN || "7d";
+const adminEmail = process.env.ADMIN_EMAIL || "admin@eastdelta.edu.bd";
+const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123456";
 
 export const envConfig = {
-  // bcryptRound,
-  // accessSecret,
-  // refreSecret,
   productionType,
-  // websiteLink,
-  // nodeENV,
-  // gmailAuthPass,
-  // recruiter_gmail,
-  // tokenExpiresIn,
+  port,
+  dbUrl,
+  jwtSecret,
+  jwtExpiresIn,
+  adminEmail,
+  adminPassword,
 };

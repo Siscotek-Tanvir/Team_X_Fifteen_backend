@@ -1,6 +1,29 @@
 import { Response } from "express";
 import { statusCodes } from "../Configs/StatusCode";
 
+export interface IApiResponse<T> {
+  statusCode?: number;
+  success: boolean;
+  message?: string;
+  meta?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    totalPage?: number;
+  };
+  data?: T;
+}
+
+export const sendResponse = <T>(res: Response, data: IApiResponse<T>) => {
+  res.status(data.statusCode || statusCodes.ok).json({
+    success: data.success,
+    statusCode: data.statusCode || statusCodes.ok,
+    message: data.message,
+    meta: data.meta,
+    data: data.data,
+  });
+};
+
 export const emptyResponse = (res: Response, data: any) => {
   return res.status(statusCodes.notFound).json({
     success: false,
@@ -20,9 +43,9 @@ export const notUpdated = (res: Response, id: string, data: any) => {
 export const notGiven = (res: Response) => {
   res.status(statusCodes.serviceUnavaiAble).json({
     success: false,
-    message: "Missing required fields. Please provide all necessary credentials."
-  })
-}
+    message: "Missing required fields. Please provide all necessary credentials.",
+  });
+};
 
 export const alreadyExist = (res: Response, data: any) => {
   res.status(statusCodes.conflict).json({
@@ -31,6 +54,7 @@ export const alreadyExist = (res: Response, data: any) => {
     data,
   });
 };
+
 export const success = (res: Response, data: any, message: string, total?: number) => {
   res.status(statusCodes.ok).json({
     success: true,
