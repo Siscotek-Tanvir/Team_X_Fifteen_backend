@@ -5,14 +5,14 @@ import { sendResponse } from "../../Utils/response";
 import { EventServices } from "./event.service";
 
 const seedEvents = catchAsync(async (req: Request, res: Response) => {
-  const overwrite = req.query.overwrite === "true";
-  const result = await EventServices.seedEventsToDB(overwrite);
+  const force = req.query.force === "true";
+  const result = await EventServices.seedEventsToDB(force);
 
   sendResponse(res, {
     statusCode: statusCodes.create,
     success: true,
     message: result.message,
-    data: result,
+    data: result.data,
   });
 });
 
@@ -29,7 +29,7 @@ const getAllEvents = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleEvent = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const result = await EventServices.getSingleEventByIdFromDB(id);
 
   sendResponse(res, {
@@ -63,7 +63,7 @@ const createEvent = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateEvent = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const result = await EventServices.updateEventInDB(id, req.body);
 
   sendResponse(res, {
@@ -75,7 +75,7 @@ const updateEvent = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteEvent = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const result = await EventServices.deleteEventFromDB(id);
 
   sendResponse(res, {
@@ -87,7 +87,7 @@ const deleteEvent = catchAsync(async (req: Request, res: Response) => {
 });
 
 const registerForEvent = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const result = await EventServices.registerForEventInDB(id, req.body);
 
   sendResponse(res, {

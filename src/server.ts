@@ -1,36 +1,19 @@
-import dns from "node:dns";
 import dotenv from "dotenv";
 import { Server } from "http";
-import mongoose from "mongoose";
 import app from "./app";
-import { EventServices } from "./modules/events/event.service";
-import { UserServices } from "./modules/user/user.service";
+import { envConfig } from "./Configs/envConfig";
+import { connectDB } from "./DB/connectDB";
 
 dotenv.config();
 
-const port = process.env.PORT || 5000;
-const dbUrl = process.env.DB_URL;
-
-if (!dbUrl) {
-  console.error("Error: DB_URL is not defined in environment variables.");
-  process.exit(1);
-}
+const port = envConfig.port || 5000;
 
 async function main() {
   try {
-    dns.setServers(["1.1.1.1", "1.0.0.1"]);
+    // Connect to database and seed defaults
+    await connectDB();
 
-    // Connect to MongoDB
-    await mongoose.connect(dbUrl as string);
-    console.log("Connected to MongoDB successfully.");
-
-    // Auto-seed default admin user if no admin exists
-    await UserServices.seedDefaultAdminUserIfEmpty();
-
-    // Auto-seed initial events if collection is empty
-    await EventServices.seedInitialEventsIfEmpty();
-
-    // Start the server
+    // Start the local server
     const server: Server = app.listen(port, () => {
       console.log(`🚀 App listening on http://localhost:${port}`);
     });

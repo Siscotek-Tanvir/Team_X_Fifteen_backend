@@ -1,33 +1,35 @@
-import { Request, Response } from 'express';
-import { statusCodes } from '../../Configs/StatusCode';
-import catchAsync from '../../Utils/catchAsync';
-import { sendResponse } from '../../Utils/response';
-import { ProductServices } from './seminar.service';
+import { Request, Response } from "express";
+import { statusCodes } from "../../Configs/StatusCode";
+import catchAsync from "../../Utils/catchAsync";
+import { sendResponse } from "../../Utils/response";
+import { EventServices } from "../events/event.service";
 
-const getAllProducts = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.getAllProductsFromDB(req.query);
+const getAllSeminars = catchAsync(async (req: Request, res: Response) => {
+  const query = { ...req.query, type: "seminar" };
+  const result = await EventServices.getAllEventsFromDB(query);
 
   sendResponse(res, {
     statusCode: statusCodes.ok,
     success: true,
-    message: 'All products fetched successfully',
+    message: "Seminars fetched successfully",
     meta: result.meta,
     data: result.data,
   });
 });
 
-const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.getSingleProductFromDB(req.params?.id);
+const getSingleSeminar = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const result = await EventServices.getSingleEventByIdFromDB(id);
 
   sendResponse(res, {
     statusCode: statusCodes.ok,
     success: true,
-    message: 'Product fetched successfully',
+    message: "Seminar details retrieved successfully",
     data: result,
   });
 });
 
-export const ProductControllers = {
-  getAllProducts,
-  getSingleProduct,
+export const SeminarControllers = {
+  getAllSeminars,
+  getSingleSeminar,
 };

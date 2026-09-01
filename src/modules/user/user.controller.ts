@@ -28,7 +28,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const result = await UserServices.getSingleUserByIdFromDB(id);
 
   sendResponse(res, {
@@ -40,7 +40,7 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUserRole = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const { role } = req.body;
   const result = await UserServices.updateUserRoleInDB(id, role);
 
@@ -53,7 +53,7 @@ const updateUserRole = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const { status } = req.body;
   const result = await UserServices.updateUserStatusInDB(id, status);
 
@@ -66,7 +66,7 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const result = await UserServices.updateUserInDB(id, req.body);
 
   sendResponse(res, {
@@ -78,7 +78,7 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const currentAdminId = (req.user as any)?._id?.toString();
   const result = await UserServices.deleteUserFromDB(id, currentAdminId);
 

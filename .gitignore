@@ -55,3 +55,5 @@ debug.log
 # .github/
 # .gitlab/
 .vercel
+
+.vercel
